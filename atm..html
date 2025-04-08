@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ATM Simulator</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        .atm-box {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            max-height: 700px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            position: relative;
+        }
+        .atm-header {
+            background-color: #1e3a8a;
+            color: #ffffff;
+            padding: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin: -20px -20px 15px -20px;
+        }
+        .atm-instruction {
+            background-color: #add8e6;
+            color: #000000;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 12px;
+            font-size: 18px;
+            width: 80%;
+            max-width: 250px;
+            border: 2px solid #1e3a8a;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            color: #000000;
+            text-align: center;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            margin: 10px auto;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            touch-action: manipulation;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .language-buttons button {
+            background-color: #a52a2a;
+            color: #ffffff;
+            width: 40%;
+            min-width: 120px;
+            height: 60px;
+            border-radius: 25px;
+            display: block;
+            margin: 10px auto;
+        }
+        #message {
+            color: #ff4500;
+            font-size: 18px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        #welcome-screen, #language-screen, #pin-screen, #menu-screen, 
+        #balance-screen, #withdraw-screen, #deposit-screen, #transfer-screen, #thankyou-screen {
+            display: none;
+            position: relative;
+            padding: 10px;
+        }
+        #welcome-screen {
+            display: block;
+        }
+        .menu-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .left-column, .right-column {
+            text-align: center;
+            width: 45%;
+        }
+        .exit-row {
+            text-align: right;
+            margin-top: 10px;
+        }
+        #thankyou-screen .exit-row {
+            text-align: center;
+        }
+        .exit-row button {
+            background-color: #1e90ff;
+            color: #ffffff;
+            width: 100px;
+            height: 60px;
+            border-radius: 5px;
+        }
+        .transaction-buttons button {
+            background-color: #a52a2a;
+            color: #ffffff;
+            width: 80%;
+            max-width: 200px;
+            height: 60px;
+            border-radius: 5px;
+            margin: 5px auto;
+        }
+
+        @media (max-width: 480px) {
+            .atm-box {
+                width: 100%;
+                height: 100vh;
+                max-height: none;
+                border-radius: 0;
+                margin: 0;
+                padding: 10px;
+            }
+            .atm-header {
+                font-size: 28px;
+                padding: 10px;
+                margin: -10px -10px 10px -10px;
+            }
+            .atm-instruction {
+                font-size: 20px;
+                padding: 10px;
+            }
+            .language-buttons button {
+                width: 60%;
+                min-width: 100px;
+                height: 50px;
+            }
+            .transaction-buttons button {
+                width: 90%;
+                max-width: 180px;
+                height: 50px;
+            }
+            .exit-row button {
+                width: 80px;
+                height: 50px;
+            }
+            input {
+                width: 90%;
+                max-width: 200px;
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="atm-box">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Please Insert Your Card</div>
+            <button onclick="showLanguageScreen()" style="background-color: #1e90ff; color: #ffffff; width: 100px; height: 60px; border-radius: 5px;">Enter</button>
+        </div>
+
+        <!-- Language Selection Screen -->
+        <div id="language-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Please select language</div>
+            <div class="language-buttons">
+                <button onclick="setLanguage('english')">English</button>
+                <button onclick="setLanguage('hindi')">Hindi</button>
+            </div>
+        </div>
+
+        <!-- PIN Screen -->
+        <div id="pin-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Enter Your PIN</div>
+            <input type="password" id="pin" placeholder="****" maxlength="4">
+            <br>
+            <button onclick="checkPin()">Submit</button>
+        </div>
+
+        <!-- Transaction Menu Screen -->
+        <div id="menu-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Select Transaction</div>
+            <div class="menu-container">
+                <div class="left-column">
+                    <div class="transaction-buttons">
+                        <button onclick="showBalanceScreen()" id="balance-btn">Check Balance</button>
+                        <button onclick="showWithdrawScreen()" id="withdraw-btn">Withdraw</button>
+                        <button onclick="showDepositScreen()" id="deposit-btn">Deposit</button>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="transaction-buttons">
+                        <button onclick="showTransferScreen()" id="transfer-btn">Transfer Money</button>
+                        <button onclick="otherServices()" id="other-btn">Other Services</button>
+                    </div>
+                </div>
+            </div>
+            <div class="exit-row">
+                <button onclick="showThankYou()">Exit</button>
+            </div>
+        </div>
+
+        <!-- Balance Screen -->
+        <div id="balance-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Your Balance</div>
+            <p id="balance-display" style="color: #000000; font-size: 22px;"></p>
+            <button onclick="backToMenu()">Back</button>
+        </div>
+
+        <!-- Withdraw Screen -->
+        <div id="withdraw-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Withdraw Money</div>
+            <input type="number" id="withdraw-amount" placeholder="Enter Amount">
+            <br>
+            <button onclick="processWithdraw()">Withdraw</button>
+            <button onclick="backToMenu()">Back</button>
+        </div>
+
+        <!-- Deposit Screen -->
+        <div id="deposit-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Deposit Money</div>
+            <input type="number" id="deposit-amount" placeholder="Enter Amount">
+            <br>
+            <button onclick="processDeposit()">Deposit</button>
+            <button onclick="backToMenu()">Back</button>
+        </div>
+
+        <!-- Transfer Screen -->
+        <div id="transfer-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Transfer Money</div>
+            <input type="number" id="transfer-amount" placeholder="Enter Amount">
+            <br>
+            <button onclick="processTransfer()">Transfer</button>
+            <button onclick="backToMenu()">Back</button>
+        </div>
+
+        <!-- Thank You Screen -->
+        <div id="thankyou-screen">
+            <div class="atm-header">ATM</div>
+            <div class="atm-instruction">Thank You!</div>
+            <div class="exit-row">
+                <button onclick="reset()">Exit</button>
+            </div>
+        </div>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        let balance = 5000; // Shuruaati balance
+        let correctPin = "1234"; // Default PIN
+        let language = "english"; // Default language
+
+        // Welcome to Language Screen
+        function showLanguageScreen() {
+            document.getElementById("welcome-screen").style.display = "none";
+            document.getElementById("language-screen").style.display = "block";
+            document.getElementById("message").innerText = "";
+        }
+
+        // Language Selection
+        function setLanguage(lang) {
+            language = lang;
+            document.getElementById("language-screen").style.display = "none";
+            document.getElementById("pin-screen").style.display = "block";
+            if (language === "hindi") {
+                document.querySelector("#pin-screen .atm-instruction").innerText = "अपना पिन दर्ज करें";
+                document.getElementById("message").innerText = "";
+            } else {
+                document.querySelector("#pin-screen .atm-instruction").innerText = "Enter Your PIN";
+                document.getElementById("message").innerText = "";
+            }
+        }
+
+        // PIN Check
+        function checkPin() {
+            let pin = document.getElementById("pin").value;
+            if (pin === correctPin) {
+                document.getElementById("pin-screen").style.display = "none";
+                document.getElementById("menu-screen").style.display = "block";
+                if (language === "hindi") {
+                    document.querySelector("#menu-screen .atm-instruction").innerText = "लेन-देन चुनें";
+                    document.getElementById("balance-btn").innerText = "शेष राशि देखें";
+                    document.getElementById("withdraw-btn").innerText = "निकासी";
+                    document.getElementById("deposit-btn").innerText = "जमा";
+                    document.getElementById("transfer-btn").innerText = "पैसे ट्रांसफर करें";
+                    document.getElementById("other-btn").innerText = "अन्य सेवाएँ";
+                    document.getElementById("message").innerText = "";
+                } else {
+                    document.querySelector("#menu-screen .atm-instruction").innerText = "Select Transaction";
+                    document.getElementById("balance-btn").innerText = "Check Balance";
+                    document.getElementById("withdraw-btn").innerText = "Withdraw";
+                    document.getElementById("deposit-btn").innerText = "Deposit";
+                    document.getElementById("transfer-btn").innerText = "Transfer Money";
+                    document.getElementById("other-btn").innerText = "Other Services";
+                    document.getElementById("message").innerText = "";
+                }
+            } else {
+                if (language === "hindi") {
+                    document.getElementById("message").innerText = "गलत पिन! पुनः प्रयास करें।";
+                } else {
+                    document.getElementById("message").innerText = "Wrong PIN! Please try again.";
+                }
+            }
+        }
+
+        // Show Transaction Screens
+        function showBalanceScreen() {
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("balance-screen").style.display = "block";
+            if (language === "hindi") {
+                document.querySelector("#balance-screen .atm-instruction").innerText = "आपकी शेष राशि";
+                document.getElementById("balance-display").innerText = "₹" + balance;
+            } else {
+                document.querySelector("#balance-screen .atm-instruction").innerText = "Your Balance";
+                document.getElementById("balance-display").innerText = "₹" + balance;
+            }
+            document.getElementById("message").innerText = "";
+        }
+
+        function showWithdrawScreen() {
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("withdraw-screen").style.display = "block";
+            if (language === "hindi") {
+                document.querySelector("#withdraw-screen .atm-instruction").innerText = "निकासी";
+                document.getElementById("withdraw-amount").placeholder = "राशि डालें";
+            } else {
+                document.querySelector("#withdraw-screen .atm-instruction").innerText = "Withdraw Money";
+                document.getElementById("withdraw-amount").placeholder = "Enter Amount";
+            }
+            document.getElementById("withdraw-amount").value = "";
+            document.getElementById("message").innerText = "";
+        }
+
+        function showDepositScreen() {
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("deposit-screen").style.display = "block";
+            if (language === "hindi") {
+                document.querySelector("#deposit-screen .atm-instruction").innerText = "जमा";
+                document.getElementById("deposit-amount").placeholder = "राशि डालें";
+            } else {
+                document.querySelector("#deposit-screen .atm-instruction").innerText = "Deposit Money";
+                document.getElementById("deposit-amount").placeholder = "Enter Amount";
+            }
+            document.getElementById("deposit-amount").value = "";
+            document.getElementById("message").innerText = "";
+        }
+
+        function showTransferScreen() {
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("transfer-screen").style.display = "block";
+            if (language === "hindi") {
+                document.querySelector("#transfer-screen .atm-instruction").innerText = "पैसे ट्रांसफर करें";
+                document.getElementById("transfer-amount").placeholder = "राशि डालें";
+            } else {
+                document.querySelector("#transfer-screen .atm-instruction").innerText = "Transfer Money";
+                document.getElementById("transfer-amount").placeholder = "Enter Amount";
+            }
+            document.getElementById("transfer-amount").value = "";
+            document.getElementById("message").innerText = "";
+        }
+
+        // Process Transactions
+        function processWithdraw() {
+            let amount = Number(document.getElementById("withdraw-amount").value);
+            if (amount > balance) {
+                document.getElementById("message").innerText = language === "hindi" ? "अपर्याप्त शेष राशि!" : "Insufficient Balance!";
+            } else if (amount <= 0 || isNaN(amount)) {
+                document.getElementById("message").innerText = language === "hindi" ? "वैध राशि डालें!" : "Enter a valid amount!";
+            } else {
+                balance -= amount;
+                document.getElementById("message").innerText = language === "hindi" ? "निकासी सफल! कृपया नकदी लें।" : "Withdrawal Successful! Please take your cash.";
+            }
+        }
+
+        function processDeposit() {
+            let amount = Number(document.getElementById("deposit-amount").value);
+            if (amount <= 0 || isNaN(amount)) {
+                document.getElementById("message").innerText = language === "hindi" ? "वैध राशि डालें!" : "Enter a valid amount!";
+            } else {
+                balance += amount;
+                document.getElementById("message").innerText = language === "hindi" ? "जमा सफल!" : "Deposit Successful!";
+            }
+        }
+
+        function processTransfer() {
+            let amount = Number(document.getElementById("transfer-amount").value);
+            if (amount > balance) {
+                document.getElementById("message").innerText = language === "hindi" ? "अपर्याप्त शेष राशि!" : "Insufficient Balance!";
+            } else if (amount <= 0 || isNaN(amount)) {
+                document.getElementById("message").innerText = language === "hindi" ? "वैध राशि डालें!" : "Enter a valid amount!";
+            } else {
+                balance -= amount;
+                document.getElementById("message").innerText = language === "hindi" ? "ट्रांसफर सफल!" : "Transfer Successful!";
+            }
+        }
+
+        // Other Services
+        function otherServices() {
+            document.getElementById("message").innerText = language === "hindi" ? "अन्य सेवाएँ उपलब्ध हैं।" : "Other services are available.";
+        }
+
+        // Back to Menu
+        function backToMenu() {
+            document.getElementById("balance-screen").style.display = "none";
+            document.getElementById("withdraw-screen").style.display = "none";
+            document.getElementById("deposit-screen").style.display = "none";
+            document.getElementById("transfer-screen").style.display = "none";
+            document.getElementById("menu-screen").style.display = "block";
+            document.getElementById("message").innerText = "";
+        }
+
+        // Thank You Screen
+        function showThankYou() {
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("balance-screen").style.display = "none";
+            document.getElementById("withdraw-screen").style.display = "none";
+            document.getElementById("deposit-screen").style.display = "none";
+            document.getElementById("transfer-screen").style.display = "none";
+            document.getElementById("thankyou-screen").style.display = "block";
+            if (language === "hindi") {
+                document.querySelector("#thankyou-screen .atm-instruction").innerText = "धन्यवाद!";
+                document.getElementById("message").innerText = "";
+            } else {
+                document.querySelector("#thankyou-screen .atm-instruction").innerText = "Thank You!";
+                document.getElementById("message").innerText = "";
+            }
+        }
+
+        // Reset to Welcome Screen
+        function reset() {
+            document.getElementById("thankyou-screen").style.display = "none";
+            document.getElementById("welcome-screen").style.display = "block";
+            document.getElementById("pin").value = "";
+            document.getElementById("message").innerText = "";
+        }
+    </script>
+</body>
+</html>
